@@ -202,7 +202,7 @@ def ingest_datasets(conn):
                 for sheet_name, frame in sheet_map.items():
                     frames.append(frame)
                 if not frames:
-                    raise ValueError(f"Workbook contained no sheets with data")
+                    raise ValueError("Workbook contained no sheets with data")
                 df = pd.concat(frames, ignore_index=True)
             else:
                 raise ValueError(f"Unsupported file type: {file_type}")
