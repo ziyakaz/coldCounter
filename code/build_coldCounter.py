@@ -22,7 +22,8 @@ import pandas as pd
 import requests
 from io import BytesIO
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from urllib.parse import urlparse
 import os
 from pyfiglet import Figlet
 from colorama import Fore, Style, init
@@ -50,36 +51,12 @@ holdroom_office_mapping_csv = workspace_root / "data" / "holdroom_office_mapping
 # --------------------------------------------------
 
 datasets = [
-    {
-        "url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/arrests-latest.parquet",
-        "table": "raw_arrests",
-        "type": "parquet"
-    },
-    {
-        "url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/detainers-latest.parquet",
-        "table": "raw_detainers",
-        "type": "parquet"
-    },
-    {
-        "url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/detention-stints-latest.parquet",
-        "table": "raw_detention_stints",
-        "type": "parquet"
-    },
-    {
-        "url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/detention-stays-latest.parquet",
-        "table": "raw_detention_stays",
-        "type": "parquet"
-    },
-    {
-        "url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/facilities-daily-population-latest.parquet",
-        "table": "raw_facility_population",
-        "type": "parquet"
-    },
-    {
-        "url": "https://github.com/deportationdata/ice-offices/raw/refs/heads/main/data/ice-offices.feather",
-        "table": "dim_ice_offices",
-        "type": "feather"
-    }
+    {"url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/arrests-latest.parquet", "table": "raw_arrests"},
+    {"url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/detainers-latest.parquet", "table": "raw_detainers"},
+    {"url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/detention-stints-latest.parquet", "table": "raw_detention_stints"},
+    {"url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/detention-stays-latest.parquet", "table": "raw_detention_stays"},
+    {"url": "https://github.com/deportationdata/ice/raw/refs/heads/main/data/facilities-daily-population-latest.parquet", "table": "raw_facility_population"},
+    {"url": "https://github.com/deportationdata/ice-offices/raw/refs/heads/main/data/ice-offices.feather", "table": "dim_ice_offices"}
 ]
 
 #---------------------------------------------------
@@ -183,7 +160,7 @@ def ingest_datasets(conn):
 
         url = dataset["url"]
         table_name = dataset["table"]
-        file_type = dataset["type"]
+        file_type = PurePosixPath(urlparse(url).path).suffix.lower().lstrip(".")
 
         try:
             log(f"{table_name}: Fetching dataset...")
