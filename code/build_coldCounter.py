@@ -94,14 +94,9 @@ def add_deterministic_uuid(df, table_name, key_columns, id_column, namespace):
         .agg("_".join, axis=1)
     )
 
-    df.insert(
-        0,
-        id_column,
-        keys.map(lambda k: str(uuid.uuid5(namespace, k)))
-    )
+    df.insert(0, id_column, keys.map(lambda k: str(uuid.uuid5(namespace, k))))
 
     log(f"{table_name}: Deterministic UUIDs generated as {id_column}")
-    return df
 
 # --------------------------------------------------
 # STAGE 0 — LOAD REFERENCE TABLES
@@ -186,9 +181,9 @@ def ingest_datasets(conn):
             log(f"{table_name}: Loaded {len(df):,} rows")
                 
             if table_name == "dim_ice_offices":
-                df = add_deterministic_uuid(
-                    df=df,
-                    table_name=table_name,
+                add_deterministic_uuid(
+                    df,
+                    table_name,
                     key_columns=["office_name", "city", "state"],
                     id_column="office_id",
                     namespace=NAMESPACE_ICE_OFFICES,
