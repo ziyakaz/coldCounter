@@ -95,7 +95,6 @@ def add_deterministic_uuid(df, table_name, key_columns, id_column, namespace):
     )
 
     df.insert(0, id_column, keys.map(lambda k: str(uuid.uuid5(namespace, k))))
-
     log(f"{table_name}: Deterministic UUIDs generated as {id_column}")
 
 # --------------------------------------------------
