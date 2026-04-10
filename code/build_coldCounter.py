@@ -85,15 +85,8 @@ def banner(msg):
 def add_deterministic_uuid(df, table_name, key_columns, id_column, namespace):
     missing = [col for col in key_columns if col not in df.columns]
     if missing:
-        raise KeyError(f"Missing key columns for {id_column}: {missing}")
-    
-    keys = (
-        df[key_columns]
-        .fillna("")
-        .astype(str)
-        .agg("_".join, axis=1)
-    )
-
+        raise KeyError(f"Missing key columns for {id_column}: {missing}")    
+    keys = df[key_columns].fillna("").astype(str).agg("_".join, axis=1)
     df.insert(0, id_column, keys.map(lambda k: str(uuid.uuid5(namespace, k))))
     log(f"{table_name}: Deterministic UUIDs generated as {id_column}")
 
