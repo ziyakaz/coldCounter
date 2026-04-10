@@ -183,6 +183,7 @@ def ingest_datasets(conn):
                 df = pd.concat(frames, ignore_index=True)
             else:
                 raise ValueError(f"Unsupported file type: {file_type}")
+            log(f"{table_name}: Loaded {len(df):,} rows")
                 
             if table_name == "dim_ice_offices":
                 df = add_deterministic_uuid(
@@ -192,12 +193,9 @@ def ingest_datasets(conn):
                     id_column="office_id",
                     namespace=NAMESPACE_ICE_OFFICES,
                 )
-                
-            log(f"{table_name}: Loaded {len(df):,} rows")
             
             log(f"{table_name}: Writing to coldCounter...")
             df.to_sql(table_name, conn, if_exists="replace", index=False)
-
             log(f"{table_name}: Table updated")
 
         except Exception as e:
